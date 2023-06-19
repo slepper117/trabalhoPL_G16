@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = "left+-left*ASSIGN ESCREVER NUMBER VARIDexpression : expression '+' expression\n                      | expression '-' expression\n                      | expression '*' expressionexpression : NUMBERexpression : VARID"
+_lr_signature = "left+-left*rightsimetricoASSIGN COMMA ESCREVER NUMBER STRING VAR VARID S : expressions ';'  expressions :  expressions ';' expression  expressions :  expression  expression : ESCREVER arguments  arguments : arguments COMMA argument  arguments : argument  argument : NUMBER  argument : STRING  expression : ESCREVER x  expression : VAR VARID ASSIGN x  x : x '+' x \n              | x '-' x \n              | x '*' x  x : '-' x %prec simetrico  x : '(' x ')'  x : NUMBER  x : VARID "
     
-_lr_action_items = {'NUMBER':([0,4,5,6,],[2,2,2,2,]),'VARID':([0,4,5,6,],[3,3,3,3,]),'$end':([1,2,3,7,8,9,],[0,-4,-5,-1,-2,-3,]),'+':([1,2,3,7,8,9,],[4,-4,-5,-1,-2,-3,]),'-':([1,2,3,7,8,9,],[5,-4,-5,-1,-2,-3,]),'*':([1,2,3,7,8,9,],[6,-4,-5,6,6,-3,]),}
+_lr_action_items = {'ESCREVER':([0,6,],[4,4,]),'VAR':([0,6,],[5,5,]),'$end':([1,6,],[0,-1,]),';':([2,3,7,8,9,12,13,14,16,21,22,25,26,27,28,29,30,31,],[6,-3,-4,-9,-6,-7,-17,-8,-2,-14,-16,-5,-7,-11,-12,-13,-15,-10,]),'-':([4,8,10,11,12,13,18,19,20,21,22,23,24,27,28,29,30,31,],[10,19,10,10,-16,-17,10,10,10,-14,-16,19,10,-11,-12,-13,-15,19,]),'(':([4,10,11,18,19,20,24,],[11,11,11,11,11,11,11,]),'NUMBER':([4,10,11,17,18,19,20,24,],[12,22,22,26,22,22,22,22,]),'VARID':([4,5,10,11,18,19,20,24,],[13,15,13,13,13,13,13,13,]),'STRING':([4,17,],[14,14,]),'COMMA':([7,9,12,14,25,26,],[17,-6,-7,-8,-5,-7,]),'+':([8,12,13,21,22,23,27,28,29,30,31,],[18,-16,-17,-14,-16,18,-11,-12,-13,-15,18,]),'*':([8,12,13,21,22,23,27,28,29,30,31,],[20,-16,-17,-14,-16,20,20,20,-13,-15,20,]),')':([13,21,22,23,27,28,29,30,],[-17,-14,-16,30,-11,-12,-13,-15,]),'ASSIGN':([15,],[24,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'expression':([0,4,5,6,],[1,7,8,9,]),}
+_lr_goto_items = {'S':([0,],[1,]),'expressions':([0,],[2,]),'expression':([0,6,],[3,16,]),'arguments':([4,],[7,]),'x':([4,10,11,18,19,20,24,],[8,21,23,27,28,29,31,]),'argument':([4,17,],[9,25,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,10 +26,22 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> expression","S'",1,None,None,None),
-  ('expression -> expression + expression','expression',3,'p_expression','arith_grammar.py',24),
-  ('expression -> expression - expression','expression',3,'p_expression','arith_grammar.py',25),
-  ('expression -> expression * expression','expression',3,'p_expression','arith_grammar.py',26),
-  ('expression -> NUMBER','expression',1,'p_expression_number','arith_grammar.py',30),
-  ('expression -> VARID','expression',1,'p_expression_varid','arith_grammar.py',34),
+  ("S' -> S","S'",1,None,None,None),
+  ('S -> expressions ;','S',2,'p_s','arith_grammar.py',32),
+  ('expressions -> expressions ; expression','expressions',3,'p_expr_tail','arith_grammar.py',37),
+  ('expressions -> expression','expressions',1,'p_expr_head','arith_grammar.py',44),
+  ('expression -> ESCREVER arguments','expression',2,'p_expr_escrever','arith_grammar.py',49),
+  ('arguments -> arguments COMMA argument','arguments',3,'p_expr_escrever_args_multiple','arith_grammar.py',54),
+  ('arguments -> argument','arguments',1,'p_expr_escrever_args_single','arith_grammar.py',61),
+  ('argument -> NUMBER','argument',1,'p_expr_escrever_args_number','arith_grammar.py',66),
+  ('argument -> STRING','argument',1,'p_expr_escrever_args_string','arith_grammar.py',71),
+  ('expression -> ESCREVER x','expression',2,'p_expr_varid','arith_grammar.py',76),
+  ('expression -> VAR VARID ASSIGN x','expression',4,'p_expr_varid_assign','arith_grammar.py',81),
+  ('x -> x + x','x',3,'p_expr_varid_op','arith_grammar.py',86),
+  ('x -> x - x','x',3,'p_expr_varid_op','arith_grammar.py',87),
+  ('x -> x * x','x',3,'p_expr_varid_op','arith_grammar.py',88),
+  ('x -> - x','x',2,'p_expr_varid_neg','arith_grammar.py',93),
+  ('x -> ( x )','x',3,'p_expr_varid_parens','arith_grammar.py',98),
+  ('x -> NUMBER','x',1,'p_expr_varid_num','arith_grammar.py',103),
+  ('x -> VARID','x',1,'p_expr_varid_var','arith_grammar.py',107),
 ]

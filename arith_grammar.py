@@ -1,17 +1,17 @@
-import ply.yacc as yacc
+# arith_grammar.py
+import ply.yacc as pyacc
 from arith_lexer import ArithLexer
 
-
 class ArithGrammar:
-    tokens = ArithLexer.tokens
-
-    # Definição da precedência dos operadores
     precedence = (
-        ('left', '+', '-'),  # Precedência dos operadores de adição e subtração
-        ('left', '*'),  # Precedência do operador de multiplicação
-        ("right", 'simetrico'),  # Precedência do operador unário de negação
-    )
-
+        # Precedência dos operadores de adição e subtração
+        ('left' , '+', '-'),
+        # Precedência do operador de multiplicação
+        ("left", '*'),
+        # Precedência do operador unário de negação
+        ("right", 'simetrico' ),
+        )
+    
     def __init__(self):
         self.tokens = ArithLexer.tokens
         self.lexer = ArithLexer()
@@ -19,7 +19,7 @@ class ArithGrammar:
 
     def build(self, **kwargs):
         self.lexer.build(**kwargs)
-        self.parser = yacc.yacc(module=self, **kwargs)
+        self.parser = pyacc.yacc(module=self, **kwargs)
 
     def parse(self, string):
         self.lexer.input(string)
@@ -27,60 +27,83 @@ class ArithGrammar:
 
     # Regra de produção para a instrução principal
     def p_s(self, p):
-        """S : LstV ';'"""
+        """ S : expressions ';' """
         p[0] = p[1]
 
-    # Regra de produção para uma lista de variáveis e instruções
-    def p_lstv_inst(self, p):
-        """LstV : LstV ';' Inst"""
-        p[0] = {'op': 'seq', 'args': p[1]['args'] + [p[3]]}
+    # Regra de produção de varias expressoes
+    def p_expr_tail(self, p):
+        """ expressions :  expressions ';' expression """
+        lstArgs = p[1]['args']
+        lstArgs.append(p[3])
+        p[0] = dict(op='seq', args = lstArgs)
 
-    # Regra de produção para uma única instrução
-    def p_lstv_inst_single(self, p):
-        """LstV : Inst"""
-        p[0] = {'op': 'seq', 'args': [p[1]]}
+    # Regra de produção de uma unica expressao
+    def p_expr_head(self, p):  
+        """ expressions :  expression """
+        p[0] = dict(op='seq', args= [ p[1] ])
+    
+    # Regra para expressão ESCREVER
+    def p_expr_escrever(self, p):
+        """ expression : ESCREVER arguments """
+        p[0] = dict(op='esc', args = [ p[2] ])
 
-    # Regra de produção para uma instrução de atribuição
-    def p_inst_atr(self, p):
-        """Inst : V"""
+    # Regra para varios argumentos
+    def p_expr_escrever_args_multiple(self, p):
+        """ arguments : arguments COMMA argument """
+        lstArgs = p[1]['args']
+        lstArgs.append(p[3])
+        p[0] = dict(op='esc', args = lstArgs)
+
+    # Regra para um argumento
+    def p_expr_escrever_args_single(self, p):
+        """ arguments : argument """
+        p[0] = dict(op='esc', args = [ p[1] ])
+
+    # Reconhecer numeros no argumento
+    def p_expr_escrever_args_number(self, p):
+        """ argument : NUMBER """
         p[0] = p[1]
 
-    # Regra de produção para uma instrução de escrita
-    def p_inst_esc(self, p):
-        """Inst : ESCREVER expression"""
-        p[0] = {'op': 'esc', 'args': [p[2]]}
+    # Reconhecer strings no argumento
+    def p_expr_escrever_args_string(self, p):
+        """ argument : STRING """
+        p[0] = p[1]
+
+    # Regra para expressão ESCREVER
+    def p_expr_varid(self, p):
+        """ expression : ESCREVER x """
+        p[0] = dict(op='esc', args = [ p[2] ])
 
     # Regra de produção para uma variável
-    def p_v_atrib(self, p):
-        """V : VARID ASSIGN expression"""
-        p[0] = {'op': 'atr', 'args': [p[1], p[3]]}
+    def p_expr_varid_assign(self, p):
+        """ expression : VAR VARID ASSIGN x """
+        p[0] = dict(op='atr', args = [ p[2] , p[4]] )
 
-    # Regra de produção para expressões binárias (+, -, *)
-    def p_expression_binary(self, p):
-        """expression : expression '+' expression
-                      | expression '-' expression
-                      | expression '*' expression"""
-        p[0] = {'op': p[2], 'args': [p[1], p[3]]}
+    # Regra de produção para operações
+    def p_expr_varid_op(self, p):
+        """ x : x '+' x 
+              | x '-' x 
+              | x '*' x """ 
+        p[0] = dict(op=p[2], args= [ p[1] , p[3] ])
 
     # Regra de produção para uma expressão unária (-)
-    def p_expression_unary(self, p):
-        """expression : '-' expression %prec simetrico"""
-        p[0] = {'op': p[1], 'args': [p[2]]}
+    def p_expr_varid_neg(self, p): 
+        """ x : '-' x %prec simetrico """
+        p[0] = dict(op='-', args=[ p[2] ]) 
 
     # Regra de produção para expressões entre parênteses
-    def p_expression_parens(self, p):
-        """expression : '(' expression ')'"""
+    def p_expr_varid_parens(self, p):
+        """ x : '(' x ')' """
         p[0] = p[2]
 
     # Regra de produção para um número
-    def p_expression_number(self, p):
-        """expression : NUMBER"""
-        p[0] = p[1]
-
+    def p_expr_varid_num(self, p):      
+        """ x : NUMBER """
+        p[0] = p[1] 
     # Regra de produção para um identificador de variável
-    def p_expression_varid(self, p):
-        """expression : VARID"""
-        p[0] = {'var': p[1]}
+    def p_expr_varid_var(self, p):
+        """ x : VARID """
+        p[0] = {'var': p[1] }
 
     # Tratamento de erros sintáticos
     def p_error(self, p):
@@ -90,4 +113,3 @@ class ArithGrammar:
         else:
             print('Syntax error: unexpected end of file')
             exit(1)
-

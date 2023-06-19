@@ -1,46 +1,56 @@
 # arith_eval
 
 class ArithEval:
-    symbols = {}  # Dicionário para armazenar as variáveis e seus valores
+    # Dicionário para armazenar as variáveis e seus valores
+    symbols = {}
 
+    # Operações
     operators = {
-        "+": lambda args: args[0] + args[1],  # Operador de adição
-        "-": lambda args: args[0] - args[1],  # Operador de subtração
-        "*": lambda args: args[0] * args[1],  # Operador de multiplicação
-        "seq": lambda args: args[-1],  # Operador de sequência (retorna o último valor)
-        "atr": lambda args: ArithEval._attrib(args),  # Operador de atribuição
-        "esc": lambda args: print(args[0]),  # Operador de escrita (imprime o valor)
+        "+": lambda args: args[0] + args[1],
+        "-": lambda args: args[0] - args[1],
+        "*": lambda args: args[0] * args[1],
+        "seq": lambda args: args[-1],
+        "atr": lambda args: ArithEval._attrib(args),
+        "esc": lambda args: ArithEval._escrever(args)
     }
 
     @staticmethod
     def _attrib(args):
-        value = args[1]  # Valor a ser atribuído
-        ArithEval.symbols[args[0]] = value  # Atribui o valor à variável
+        value = args[1]
+        ArithEval.symbols[args[0]] = value
         return None
-
+    
     @staticmethod
     def evaluate(ast):
-        if type(ast) is int:  # Se for um número inteiro, retorna o próprio número
+        if type(ast) is int:
             return ast
-        if type(ast) is dict:  # Se for um dicionário, é um operador
+        if type(ast) is dict:
             return ArithEval._eval_operator(ast)
-        if type(ast) is str:  # Se for uma string, é um identificador de variável
+        if type(ast) is str: 
             return ast
-        raise Exception(f"Unknown AST type")  # Tipo de AST desconhecido
+        raise Exception(f"Unknown AST type")
 
     @staticmethod
     def _eval_operator(ast):
-        if 'op' in ast:  # Verifica se o dicionário contém a chave 'op' (operador)
-            op = ast["op"]  # Obtém o operador
-            args = [ArithEval.evaluate(a) for a in ast['args']]  # Avalia os argumentos do operador
-            if op in ArithEval.operators:  # Verifica se o operador está definido
-                func = ArithEval.operators[op]  # Obtém a função associada ao operador
-                return func(args)  # Executa a função com os argumentos
+        if 'op' in ast:
+            op = ast["op"]
+            args = [ArithEval.evaluate(a) for a in ast['args']]
+            if op in ArithEval.operators:
+                func = ArithEval.operators[op]
+                return func(args)
             else:
-                raise Exception(f"Unknown operator {op}")  # Operador desconhecido
-        if 'var' in ast:  # Verifica se o dicionário contém a chave 'var' (identificador de variável)
-            varid = ast["var"]  # Obtém o identificador de variável
-            if varid in ArithEval.symbols:  # Verifica se a variável está definida
-                return ArithEval.symbols[varid]  # Retorna o valor da variável
-            raise Exception(f"error: '{varid}' undeclared (first use in this function)")  # Variável não declarada
-        raise Exception('Undefined AST')  # AST indefinida (caso não corresponda a nenhum caso acima)
+                raise Exception(f"Unknown operator {op}")
+            
+        if 'var' in ast:
+            varid = ast["var"]
+            if varid in ArithEval.symbols:
+                return ArithEval.symbols[varid]
+            raise Exception(f"error: '{varid}' undeclared (first use in this function)")
+    
+        raise Exception('Undefined AST')
+
+    @staticmethod
+    def _escrever(args):
+        for item in args:
+            if (item != None):
+                print(item)

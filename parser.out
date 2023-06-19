@@ -1,171 +1,473 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
-Unused terminals:
-
-    ASSIGN
-    ESCREVER
-
 Grammar
 
-Rule 0     S' -> expression
-Rule 1     expression -> expression + expression
-Rule 2     expression -> expression - expression
-Rule 3     expression -> expression * expression
-Rule 4     expression -> NUMBER
-Rule 5     expression -> VARID
+Rule 0     S' -> S
+Rule 1     S -> expressions ;
+Rule 2     expressions -> expressions ; expression
+Rule 3     expressions -> expression
+Rule 4     expression -> ESCREVER arguments
+Rule 5     arguments -> arguments COMMA argument
+Rule 6     arguments -> argument
+Rule 7     argument -> NUMBER
+Rule 8     argument -> STRING
+Rule 9     expression -> ESCREVER x
+Rule 10    expression -> VAR VARID ASSIGN x
+Rule 11    x -> x + x
+Rule 12    x -> x - x
+Rule 13    x -> x * x
+Rule 14    x -> - x
+Rule 15    x -> ( x )
+Rule 16    x -> NUMBER
+Rule 17    x -> VARID
 
 Terminals, with rules where they appear
 
-*                    : 3
-+                    : 1
--                    : 2
-ASSIGN               : 
-ESCREVER             : 
-NUMBER               : 4
-VARID                : 5
+(                    : 15
+)                    : 15
+*                    : 13
++                    : 11
+-                    : 12 14
+;                    : 1 2
+ASSIGN               : 10
+COMMA                : 5
+ESCREVER             : 4 9
+NUMBER               : 7 16
+STRING               : 8
+VAR                  : 10
+VARID                : 10 17
 error                : 
 
 Nonterminals, with rules where they appear
 
-expression           : 1 1 2 2 3 3 0
+S                    : 0
+argument             : 5 6
+arguments            : 4 5
+expression           : 2 3
+expressions          : 1 2
+x                    : 9 10 11 11 12 12 13 13 14 15
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . expression
-    (1) expression -> . expression + expression
-    (2) expression -> . expression - expression
-    (3) expression -> . expression * expression
-    (4) expression -> . NUMBER
-    (5) expression -> . VARID
+    (0) S' -> . S
+    (1) S -> . expressions ;
+    (2) expressions -> . expressions ; expression
+    (3) expressions -> . expression
+    (4) expression -> . ESCREVER arguments
+    (9) expression -> . ESCREVER x
+    (10) expression -> . VAR VARID ASSIGN x
 
-    NUMBER          shift and go to state 2
-    VARID           shift and go to state 3
+    ESCREVER        shift and go to state 4
+    VAR             shift and go to state 5
 
-    expression                     shift and go to state 1
+    S                              shift and go to state 1
+    expressions                    shift and go to state 2
+    expression                     shift and go to state 3
 
 state 1
 
-    (0) S' -> expression .
-    (1) expression -> expression . + expression
-    (2) expression -> expression . - expression
-    (3) expression -> expression . * expression
+    (0) S' -> S .
 
-    +               shift and go to state 4
-    -               shift and go to state 5
-    *               shift and go to state 6
 
 
 state 2
 
-    (4) expression -> NUMBER .
+    (1) S -> expressions . ;
+    (2) expressions -> expressions . ; expression
 
-    +               reduce using rule 4 (expression -> NUMBER .)
-    -               reduce using rule 4 (expression -> NUMBER .)
-    *               reduce using rule 4 (expression -> NUMBER .)
-    $end            reduce using rule 4 (expression -> NUMBER .)
+    ;               shift and go to state 6
 
 
 state 3
 
-    (5) expression -> VARID .
+    (3) expressions -> expression .
 
-    +               reduce using rule 5 (expression -> VARID .)
-    -               reduce using rule 5 (expression -> VARID .)
-    *               reduce using rule 5 (expression -> VARID .)
-    $end            reduce using rule 5 (expression -> VARID .)
+    ;               reduce using rule 3 (expressions -> expression .)
 
 
 state 4
 
-    (1) expression -> expression + . expression
-    (1) expression -> . expression + expression
-    (2) expression -> . expression - expression
-    (3) expression -> . expression * expression
-    (4) expression -> . NUMBER
-    (5) expression -> . VARID
+    (4) expression -> ESCREVER . arguments
+    (9) expression -> ESCREVER . x
+    (5) arguments -> . arguments COMMA argument
+    (6) arguments -> . argument
+    (11) x -> . x + x
+    (12) x -> . x - x
+    (13) x -> . x * x
+    (14) x -> . - x
+    (15) x -> . ( x )
+    (16) x -> . NUMBER
+    (17) x -> . VARID
+    (7) argument -> . NUMBER
+    (8) argument -> . STRING
 
-    NUMBER          shift and go to state 2
-    VARID           shift and go to state 3
+    -               shift and go to state 10
+    (               shift and go to state 11
+    NUMBER          shift and go to state 12
+    VARID           shift and go to state 13
+    STRING          shift and go to state 14
 
-    expression                     shift and go to state 7
+    arguments                      shift and go to state 7
+    x                              shift and go to state 8
+    argument                       shift and go to state 9
 
 state 5
 
-    (2) expression -> expression - . expression
-    (1) expression -> . expression + expression
-    (2) expression -> . expression - expression
-    (3) expression -> . expression * expression
-    (4) expression -> . NUMBER
-    (5) expression -> . VARID
+    (10) expression -> VAR . VARID ASSIGN x
 
-    NUMBER          shift and go to state 2
-    VARID           shift and go to state 3
+    VARID           shift and go to state 15
 
-    expression                     shift and go to state 8
 
 state 6
 
-    (3) expression -> expression * . expression
-    (1) expression -> . expression + expression
-    (2) expression -> . expression - expression
-    (3) expression -> . expression * expression
-    (4) expression -> . NUMBER
-    (5) expression -> . VARID
+    (1) S -> expressions ; .
+    (2) expressions -> expressions ; . expression
+    (4) expression -> . ESCREVER arguments
+    (9) expression -> . ESCREVER x
+    (10) expression -> . VAR VARID ASSIGN x
 
-    NUMBER          shift and go to state 2
-    VARID           shift and go to state 3
+    $end            reduce using rule 1 (S -> expressions ; .)
+    ESCREVER        shift and go to state 4
+    VAR             shift and go to state 5
 
-    expression                     shift and go to state 9
+    expression                     shift and go to state 16
 
 state 7
 
-    (1) expression -> expression + expression .
-    (1) expression -> expression . + expression
-    (2) expression -> expression . - expression
-    (3) expression -> expression . * expression
+    (4) expression -> ESCREVER arguments .
+    (5) arguments -> arguments . COMMA argument
 
-    +               reduce using rule 1 (expression -> expression + expression .)
-    -               reduce using rule 1 (expression -> expression + expression .)
-    $end            reduce using rule 1 (expression -> expression + expression .)
-    *               shift and go to state 6
-
-  ! *               [ reduce using rule 1 (expression -> expression + expression .) ]
-  ! +               [ shift and go to state 4 ]
-  ! -               [ shift and go to state 5 ]
+    ;               reduce using rule 4 (expression -> ESCREVER arguments .)
+    COMMA           shift and go to state 17
 
 
 state 8
 
-    (2) expression -> expression - expression .
-    (1) expression -> expression . + expression
-    (2) expression -> expression . - expression
-    (3) expression -> expression . * expression
+    (9) expression -> ESCREVER x .
+    (11) x -> x . + x
+    (12) x -> x . - x
+    (13) x -> x . * x
 
-    +               reduce using rule 2 (expression -> expression - expression .)
-    -               reduce using rule 2 (expression -> expression - expression .)
-    $end            reduce using rule 2 (expression -> expression - expression .)
-    *               shift and go to state 6
-
-  ! *               [ reduce using rule 2 (expression -> expression - expression .) ]
-  ! +               [ shift and go to state 4 ]
-  ! -               [ shift and go to state 5 ]
+    ;               reduce using rule 9 (expression -> ESCREVER x .)
+    +               shift and go to state 18
+    -               shift and go to state 19
+    *               shift and go to state 20
 
 
 state 9
 
-    (3) expression -> expression * expression .
-    (1) expression -> expression . + expression
-    (2) expression -> expression . - expression
-    (3) expression -> expression . * expression
+    (6) arguments -> argument .
 
-    +               reduce using rule 3 (expression -> expression * expression .)
-    -               reduce using rule 3 (expression -> expression * expression .)
-    *               reduce using rule 3 (expression -> expression * expression .)
-    $end            reduce using rule 3 (expression -> expression * expression .)
+    COMMA           reduce using rule 6 (arguments -> argument .)
+    ;               reduce using rule 6 (arguments -> argument .)
 
-  ! +               [ shift and go to state 4 ]
-  ! -               [ shift and go to state 5 ]
-  ! *               [ shift and go to state 6 ]
 
+state 10
+
+    (14) x -> - . x
+    (11) x -> . x + x
+    (12) x -> . x - x
+    (13) x -> . x * x
+    (14) x -> . - x
+    (15) x -> . ( x )
+    (16) x -> . NUMBER
+    (17) x -> . VARID
+
+    -               shift and go to state 10
+    (               shift and go to state 11
+    NUMBER          shift and go to state 22
+    VARID           shift and go to state 13
+
+    x                              shift and go to state 21
+
+state 11
+
+    (15) x -> ( . x )
+    (11) x -> . x + x
+    (12) x -> . x - x
+    (13) x -> . x * x
+    (14) x -> . - x
+    (15) x -> . ( x )
+    (16) x -> . NUMBER
+    (17) x -> . VARID
+
+    -               shift and go to state 10
+    (               shift and go to state 11
+    NUMBER          shift and go to state 22
+    VARID           shift and go to state 13
+
+    x                              shift and go to state 23
+
+state 12
+
+    (16) x -> NUMBER .
+    (7) argument -> NUMBER .
+
+  ! reduce/reduce conflict for ; resolved using rule 7 (argument -> NUMBER .)
+    +               reduce using rule 16 (x -> NUMBER .)
+    -               reduce using rule 16 (x -> NUMBER .)
+    *               reduce using rule 16 (x -> NUMBER .)
+    COMMA           reduce using rule 7 (argument -> NUMBER .)
+    ;               reduce using rule 7 (argument -> NUMBER .)
+
+  ! ;               [ reduce using rule 16 (x -> NUMBER .) ]
+
+
+state 13
+
+    (17) x -> VARID .
+
+    +               reduce using rule 17 (x -> VARID .)
+    -               reduce using rule 17 (x -> VARID .)
+    *               reduce using rule 17 (x -> VARID .)
+    ;               reduce using rule 17 (x -> VARID .)
+    )               reduce using rule 17 (x -> VARID .)
+
+
+state 14
+
+    (8) argument -> STRING .
+
+    COMMA           reduce using rule 8 (argument -> STRING .)
+    ;               reduce using rule 8 (argument -> STRING .)
+
+
+state 15
+
+    (10) expression -> VAR VARID . ASSIGN x
+
+    ASSIGN          shift and go to state 24
+
+
+state 16
+
+    (2) expressions -> expressions ; expression .
+
+    ;               reduce using rule 2 (expressions -> expressions ; expression .)
+
+
+state 17
+
+    (5) arguments -> arguments COMMA . argument
+    (7) argument -> . NUMBER
+    (8) argument -> . STRING
+
+    NUMBER          shift and go to state 26
+    STRING          shift and go to state 14
+
+    argument                       shift and go to state 25
+
+state 18
+
+    (11) x -> x + . x
+    (11) x -> . x + x
+    (12) x -> . x - x
+    (13) x -> . x * x
+    (14) x -> . - x
+    (15) x -> . ( x )
+    (16) x -> . NUMBER
+    (17) x -> . VARID
+
+    -               shift and go to state 10
+    (               shift and go to state 11
+    NUMBER          shift and go to state 22
+    VARID           shift and go to state 13
+
+    x                              shift and go to state 27
+
+state 19
+
+    (12) x -> x - . x
+    (11) x -> . x + x
+    (12) x -> . x - x
+    (13) x -> . x * x
+    (14) x -> . - x
+    (15) x -> . ( x )
+    (16) x -> . NUMBER
+    (17) x -> . VARID
+
+    -               shift and go to state 10
+    (               shift and go to state 11
+    NUMBER          shift and go to state 22
+    VARID           shift and go to state 13
+
+    x                              shift and go to state 28
+
+state 20
+
+    (13) x -> x * . x
+    (11) x -> . x + x
+    (12) x -> . x - x
+    (13) x -> . x * x
+    (14) x -> . - x
+    (15) x -> . ( x )
+    (16) x -> . NUMBER
+    (17) x -> . VARID
+
+    -               shift and go to state 10
+    (               shift and go to state 11
+    NUMBER          shift and go to state 22
+    VARID           shift and go to state 13
+
+    x                              shift and go to state 29
+
+state 21
+
+    (14) x -> - x .
+    (11) x -> x . + x
+    (12) x -> x . - x
+    (13) x -> x . * x
+
+    +               reduce using rule 14 (x -> - x .)
+    -               reduce using rule 14 (x -> - x .)
+    *               reduce using rule 14 (x -> - x .)
+    ;               reduce using rule 14 (x -> - x .)
+    )               reduce using rule 14 (x -> - x .)
+
+  ! +               [ shift and go to state 18 ]
+  ! -               [ shift and go to state 19 ]
+  ! *               [ shift and go to state 20 ]
+
+
+state 22
+
+    (16) x -> NUMBER .
+
+    +               reduce using rule 16 (x -> NUMBER .)
+    -               reduce using rule 16 (x -> NUMBER .)
+    *               reduce using rule 16 (x -> NUMBER .)
+    ;               reduce using rule 16 (x -> NUMBER .)
+    )               reduce using rule 16 (x -> NUMBER .)
+
+
+state 23
+
+    (15) x -> ( x . )
+    (11) x -> x . + x
+    (12) x -> x . - x
+    (13) x -> x . * x
+
+    )               shift and go to state 30
+    +               shift and go to state 18
+    -               shift and go to state 19
+    *               shift and go to state 20
+
+
+state 24
+
+    (10) expression -> VAR VARID ASSIGN . x
+    (11) x -> . x + x
+    (12) x -> . x - x
+    (13) x -> . x * x
+    (14) x -> . - x
+    (15) x -> . ( x )
+    (16) x -> . NUMBER
+    (17) x -> . VARID
+
+    -               shift and go to state 10
+    (               shift and go to state 11
+    NUMBER          shift and go to state 22
+    VARID           shift and go to state 13
+
+    x                              shift and go to state 31
+
+state 25
+
+    (5) arguments -> arguments COMMA argument .
+
+    COMMA           reduce using rule 5 (arguments -> arguments COMMA argument .)
+    ;               reduce using rule 5 (arguments -> arguments COMMA argument .)
+
+
+state 26
+
+    (7) argument -> NUMBER .
+
+    COMMA           reduce using rule 7 (argument -> NUMBER .)
+    ;               reduce using rule 7 (argument -> NUMBER .)
+
+
+state 27
+
+    (11) x -> x + x .
+    (11) x -> x . + x
+    (12) x -> x . - x
+    (13) x -> x . * x
+
+    +               reduce using rule 11 (x -> x + x .)
+    -               reduce using rule 11 (x -> x + x .)
+    ;               reduce using rule 11 (x -> x + x .)
+    )               reduce using rule 11 (x -> x + x .)
+    *               shift and go to state 20
+
+  ! *               [ reduce using rule 11 (x -> x + x .) ]
+  ! +               [ shift and go to state 18 ]
+  ! -               [ shift and go to state 19 ]
+
+
+state 28
+
+    (12) x -> x - x .
+    (11) x -> x . + x
+    (12) x -> x . - x
+    (13) x -> x . * x
+
+    +               reduce using rule 12 (x -> x - x .)
+    -               reduce using rule 12 (x -> x - x .)
+    ;               reduce using rule 12 (x -> x - x .)
+    )               reduce using rule 12 (x -> x - x .)
+    *               shift and go to state 20
+
+  ! *               [ reduce using rule 12 (x -> x - x .) ]
+  ! +               [ shift and go to state 18 ]
+  ! -               [ shift and go to state 19 ]
+
+
+state 29
+
+    (13) x -> x * x .
+    (11) x -> x . + x
+    (12) x -> x . - x
+    (13) x -> x . * x
+
+    +               reduce using rule 13 (x -> x * x .)
+    -               reduce using rule 13 (x -> x * x .)
+    *               reduce using rule 13 (x -> x * x .)
+    ;               reduce using rule 13 (x -> x * x .)
+    )               reduce using rule 13 (x -> x * x .)
+
+  ! +               [ shift and go to state 18 ]
+  ! -               [ shift and go to state 19 ]
+  ! *               [ shift and go to state 20 ]
+
+
+state 30
+
+    (15) x -> ( x ) .
+
+    +               reduce using rule 15 (x -> ( x ) .)
+    -               reduce using rule 15 (x -> ( x ) .)
+    *               reduce using rule 15 (x -> ( x ) .)
+    ;               reduce using rule 15 (x -> ( x ) .)
+    )               reduce using rule 15 (x -> ( x ) .)
+
+
+state 31
+
+    (10) expression -> VAR VARID ASSIGN x .
+    (11) x -> x . + x
+    (12) x -> x . - x
+    (13) x -> x . * x
+
+    ;               reduce using rule 10 (expression -> VAR VARID ASSIGN x .)
+    +               shift and go to state 18
+    -               shift and go to state 19
+    *               shift and go to state 20
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: reduce/reduce conflict in state 12 resolved using rule (argument -> NUMBER)
+WARNING: rejected rule (x -> NUMBER) in state 12
